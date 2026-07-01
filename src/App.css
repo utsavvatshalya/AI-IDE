@@ -1,0 +1,164 @@
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 100vh;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #111827, #1f2937);
+  color: #f9fafb;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.75rem;
+  color: #8b5cf6;
+}
+
+.subtitle {
+  margin-top: 0.5rem;
+  max-width: 700px;
+  color: #cbd5e1;
+}
+
+.run-button,
+.secondary-button {
+  border: none;
+  border-radius: 999px;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.2rem;
+  cursor: pointer;
+}
+
+.run-button {
+  background: #8b5cf6;
+}
+
+.secondary-button {
+  background: #334155;
+}
+
+.run-button:disabled,
+.secondary-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.prompt-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.prompt-panel label {
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.prompt-panel textarea {
+  min-height: 88px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: rgba(15, 23, 42, 0.8);
+  color: #f8fafc;
+  resize: vertical;
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+}
+
+.editor-panel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.output-panel,
+.agent-panel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  background: rgba(2, 6, 23, 0.8);
+}
+
+.output-panel {
+  min-height: 180px;
+}
+
+.agent-panel ul {
+  list-style: none;
+  padding: 0 1rem 1rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.agent-panel li {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.agent-panel strong {
+  text-transform: capitalize;
+}
+
+.agent-panel span {
+  color: #8b5cf6;
+  font-size: 0.9rem;
+}
+
+.agent-panel p {
+  color: #cbd5e1;
+  margin: 0;
+}
+
+.empty-state {
+  color: #94a3b8;
+}
+
+.output-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.output-header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.output-panel pre {
+  margin: 0;
+  padding: 1rem;
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  color: #e2e8f0;
+}
