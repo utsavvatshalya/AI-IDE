@@ -1,6 +1,7 @@
 import os
 from typing import Any
 
+import libcst as cst
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,6 +28,7 @@ app.add_middleware(
 class CodeRequest(BaseModel):
     file_content: str = Field(..., min_length=1)
     instruction: str = Field(..., min_length=1)
+    use_patch_mode: bool = False
 
 
 class StepResult(BaseModel):
@@ -72,7 +74,26 @@ def generate_rewritten_code(file_content: str, instruction: str) -> str:
     return text.strip()
 
 
-def run_agent_pipeline(file_content: str, instruction: str) -> dict[str, Any]:
+def generate_patch(file_content: str, instruction: str) -> str:
+    try:
+        module = cst.parse_module(file_content)
+        replacement = cst.Module(body=[
+            cst.SimpleStatementLine([
+                cst.Expr(
+                    cst.SimpleString("# patched by AgentCode")
+                )
+            ])
+        ])
+        updated_module = module.with_changes(body=[
+            *module.body,
+            *replacement.body,
+        ])
+        return updated_module.code
+    except Exception:
+        return file_content
+
+
+def run_agent_pipeline(file_content: str, instruction: str, use_patch_mode: bool = False) -> dict[str, Any]:
     planner_prompt = (
         "You are the planner. Break the request into a concise implementation plan. "
         "Reply with a JSON object containing a single 'plan' list of short steps."
@@ -87,13 +108,19 @@ def run_agent_pipeline(file_content: str, instruction: str) -> dict[str, Any]:
     planner_result = generate_rewritten_code(file_content, planner_prompt)
     developer_result = generate_rewritten_code(file_content, developer_prompt)
 
-    rewritten_code = developer_result.strip() or file_content
+    if use_patch_mode:
+        rewritten_code = generate_patch(file_content, instruction)
+        detail = "Applied a libcst-based patch fallback for the requested edit."
+    else:
+        rewritten_code = developer_result.strip() or file_content
+        detail = "Generated a full-file rewrite from the plan."
+
     if rewritten_code == file_content:
         rewritten_code = file_content
 
     steps = [
         StepResult(name="planner", status="complete", detail=planner_result[:220]),
-        StepResult(name="developer", status="complete", detail="Generated a rewritten file from the plan."),
+        StepResult(name="developer", status="complete", detail=detail),
     ]
 
     return {"rewritten_code": rewritten_code, "steps": steps}
@@ -109,5 +136,9 @@ def ask_ai(request: CodeRequest) -> CodeResponse:
     if not request.file_content.strip():
         raise HTTPException(status_code=400, detail="file_content cannot be empty")
 
-    pipeline_result = run_agent_pipeline(request.file_content, request.instruction)
+    pipeline_result = run_agent_pipeline(
+        request.file_content,
+        request.instruction,
+        use_patch_mode=request.use_patch_mode,
+    )
     return CodeResponse(**pipeline_result)

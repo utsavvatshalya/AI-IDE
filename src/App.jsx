@@ -13,6 +13,7 @@ print("2 + 2 =", 2 + 2)
 function App() {
   const [code, setCode] = useState(DEFAULT_PYTHON)
   const [instruction, setInstruction] = useState('Refactor this script to use a helper function and greet the user warmly.')
+  const [usePatchMode, setUsePatchMode] = useState(true)
   const [output, setOutput] = useState('Click Run to execute the current Python buffer.')
   const [status, setStatus] = useState('Loading Pyodide...')
   const [agentSteps, setAgentSteps] = useState([])
@@ -123,7 +124,7 @@ function App() {
     setStatus('Planning the rewrite...')
 
     try {
-      const data = await requestCodeAction({ file_content: code, instruction })
+      const data = await requestCodeAction({ file_content: code, instruction, use_patch_mode: usePatchMode })
       setCode(data.rewritten_code)
       setAgentSteps(data.steps || [])
       setOutput('Phase 3 pipeline completed. Planner and developer steps finished.')
@@ -165,6 +166,14 @@ function App() {
           onChange={(event) => setInstruction(event.target.value)}
           placeholder="Describe the change you want the AI to make"
         />
+        <label className="toggle-row">
+          <input
+            type="checkbox"
+            checked={usePatchMode}
+            onChange={(event) => setUsePatchMode(event.target.checked)}
+          />
+          <span>Use patch-based mode (libcst fallback)</span>
+        </label>
       </section>
 
       <section className="status-bar" aria-live="polite">

@@ -70,6 +70,17 @@
   color: #e2e8f0;
 }
 
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.toggle-row input {
+  accent-color: #8b5cf6;
+}
+
 .prompt-panel textarea {
   min-height: 88px;
   border: 1px solid rgba(255, 255, 255, 0.12);
