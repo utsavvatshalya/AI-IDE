@@ -10,10 +10,7 @@ def test_build_prompt_includes_context():
 def test_generate_rewritten_code_uses_fallback_when_api_missing(monkeypatch):
     class DummyClient:
         def __init__(self, *args, **kwargs):
-            self.calls = []
-
-        def messages_create(self, *args, **kwargs):
-            raise RuntimeError("missing api key")
+            pass
 
     monkeypatch.setattr("backend.main.Anthropic", DummyClient)
     result = generate_rewritten_code("print('hi')", "add a greeting")
@@ -21,8 +18,9 @@ def test_generate_rewritten_code_uses_fallback_when_api_missing(monkeypatch):
 
 
 def test_run_agent_pipeline_returns_planning_and_development_steps():
-    result = run_agent_pipeline("print('hi')", "add a greeting")
-    assert result["rewritten_code"]
-    assert len(result["steps"]) >= 2
+    result = run_agent_pipeline("print('hi')", "add a greeting", session_id="test-session")
+    assert result["rewritten_code"] == "print('hi')"
+    assert len(result["steps"]) >= 3
     assert any(step.name == "planner" for step in result["steps"])
     assert any(step.name == "developer" for step in result["steps"])
+    assert any(step.name == "validator" for step in result["steps"])

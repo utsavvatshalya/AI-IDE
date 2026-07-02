@@ -20,6 +20,7 @@ function App() {
   const [isRunning, setIsRunning] = useState(false)
   const [isAsking, setIsAsking] = useState(false)
   const [ready, setReady] = useState(false)
+  const [sessionId, setSessionId] = useState('')
   const pyodideRef = useRef(null)
 
   useEffect(() => {
@@ -124,10 +125,16 @@ function App() {
     setStatus('Planning the rewrite...')
 
     try {
-      const data = await requestCodeAction({ file_content: code, instruction, use_patch_mode: usePatchMode })
+      const data = await requestCodeAction({
+        file_content: code,
+        instruction,
+        use_patch_mode: usePatchMode,
+        session_id: sessionId || undefined,
+      })
       setCode(data.rewritten_code)
       setAgentSteps(data.steps || [])
-      setOutput('Phase 3 pipeline completed. Planner and developer steps finished.')
+      setSessionId(data.session_id)
+      setOutput('Phase 5 pipeline completed. Planner, developer, validator, and memory steps finished.')
       setStatus('Rewrite complete.')
     } catch (error) {
       console.error(error)
@@ -142,7 +149,7 @@ function App() {
     <main className="app-shell">
       <header className="app-header">
         <div>
-          <p className="eyebrow">AgentCode · Phase 2</p>
+          <p className="eyebrow">AgentCode · Phase 5</p>
           <h1>Browser-based Python playground</h1>
           <p className="subtitle">
             Type Python in the editor, run it locally with Pyodide, or ask the backend to rewrite the current file.
@@ -179,6 +186,7 @@ function App() {
       <section className="status-bar" aria-live="polite">
         <span>{status}</span>
         <span>{ready ? 'Client-side runtime ready' : 'Waiting for runtime'}</span>
+        <span>{sessionId ? `Session ID: ${sessionId}` : 'No session yet'}</span>
       </section>
 
       <section className="editor-panel">
@@ -208,7 +216,7 @@ function App() {
       <section className="agent-panel">
         <div className="output-header">
           <h2>Agent steps</h2>
-          <span>Planner → Developer</span>
+          <span>Planner → Developer → Validator</span>
         </div>
         <ul>
           {agentSteps.length === 0 ? (

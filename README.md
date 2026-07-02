@@ -73,6 +73,7 @@ Build and run both services locally with Docker Compose when added to the projec
 
 - The frontend uses Pyodide for client-side Python execution.
 - The backend is optional for the local playground experience, but it is required for the AI rewrite features.
+- Phase 5 adds session memory and validation: the backend stores rewrite history in SQLite, searches recent session code when planning, and validates the final Python output.
 - If no API key is configured, the backend falls back to the current file content rather than making a request.
 
 ## Verification
